@@ -1,0 +1,16 @@
+version: '2'
+services:
+    web:
+        build: ./server
+        ports:
+        - "5000:5000"
+        depends_on:
+        - "mongo"
+    
+    indexer:
+        build: ./indexer
+        depends_on:
+        - "mongo"
+
+    mongo:
+        image: mongo:3.0
