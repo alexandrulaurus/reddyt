@@ -1,7 +1,13 @@
-FROM python:3.4-alpine
+FROM python:2.7-wheezy
+
+RUN apt-get update && apt-get install -y netcat
+
 RUN mkdir -p /opt/reddyt
-COPY deps.txt /opt/reddyt/deps.txt
 WORKDIR /opt/reddyt
-RUN pip install -r deps.txt
-COPY app.py /opt/reddyt/app.py
+
+COPY deps.txt .
+RUN pip install -r ./deps.txt
+COPY app.py ./app.py
+COPY wait-init.sh ./wait-init.sh
+
 CMD ["python", "app.py"]
