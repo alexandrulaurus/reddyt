@@ -1,7 +1,13 @@
 import praw
+import json
 from datetime import datetime
+from pymongo import MongoClient
 
 def main():
+    #TODO: expose env variables for URL
+    mongo = MongoClient('mongodb://mongo:27017/')
+    db = mongo.reddyt_db
+
     reddit = praw.Reddit(client_id='QrKWmDAiiMqmKg',
 			client_secret='AzEuxi3VcfUhvynyXRZuChqQMow',
 			username='_nothingistrue',
@@ -20,18 +26,23 @@ def main():
     c = 0
     for submission in reddit.subreddit('analog').new(limit=50):
         c += 1
-        print('-----SUBMISSION-----')
-        print('ID {}'.format(submission.id))
-        print('Title {}'.format(submission.title))
-        print('Creted {}'.format(datetime.fromtimestamp(submission.created)))
-        print('--COMMENTS--')
+        item = {
+                'id'        : submission.id,
+                'title'     : submission.title,
+                'created'   : submission.created
+                }
+        print(json.dumps(item))
+        db.comments.insert(item)
+        
         submission.comments.replace_more(limit=0)
         for comment in submission.comments.list():
-            print('Comment body {}'.format(comment.body))
-            print('Comment posted at {}'.format(datetime.fromtimestamp(comment.created)))
-        print('--\COMMENTS--')
-        print('-----\SUBMISSION-----')
-
+            item = {
+                    'id'        : comment.id,
+                    'body'      : comment.body,
+                    'created'   : comment.created
+                    }
+            print(json.dumps(item))
+            db.comments.insert(item)
 
     print('Total new posts {}'.format(c))
 
