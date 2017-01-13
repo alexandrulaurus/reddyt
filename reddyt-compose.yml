@@ -1,12 +1,12 @@
 version: '2'
 services:
-    web:
-        build: ./server
-        ports:
-        - "5000:5000"
-        depends_on:
-        - "mongo"
-        command: ["./wait-init.sh", "mongo", "python", "app.py"]
+#    web:
+#        build: ./server
+#        ports:
+#        - "5000:5000"
+#        depends_on:
+#        - "mongo"
+#        command: ["./wait-init.sh", "mongo", "python", "app.py"]
     
     indexer:
         build: ./indexer

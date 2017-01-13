@@ -1,18 +1,13 @@
+from pymongo import MongoClient
 import praw
 import json
-from datetime import datetime
-from pymongo import MongoClient
+
+from reddyt import Reddyt
 
 def main():
     #TODO: expose env variables for URL
     mongo = MongoClient('mongodb://mongo:27017/')
     db = mongo.reddyt_db
-
-    reddit = praw.Reddit(client_id='QrKWmDAiiMqmKg',
-			client_secret='AzEuxi3VcfUhvynyXRZuChqQMow',
-			username='_nothingistrue',
-			password='_everythingispermitted',
-			user_agent='testscript reddit API')
 
     #TODO: parse subreddits from file.
     #TODO: make a polling schedule
@@ -23,28 +18,20 @@ def main():
     Most of reddit's listings contains a max of 1000 so I'll go with that
     https://github.com/praw-dev/praw/blob/6deea4b331f98259223376d4a1f4da319e0dd420/praw/models/listing/generator.py#L23
     """
-    c = 0
-    for submission in reddit.subreddit('analog').new(limit=50):
-        c += 1
-        item = {
-                'id'        : submission.id,
-                'title'     : submission.title,
-                'created'   : submission.created
-                }
-        print(json.dumps(item))
-        db.comments.insert(item)
-        
-        submission.comments.replace_more(limit=0)
-        for comment in submission.comments.list():
-            item = {
-                    'id'        : comment.id,
-                    'body'      : comment.body,
-                    'created'   : comment.created
-                    }
-            print(json.dumps(item))
-            db.comments.insert(item)
+    reddyt = Reddyt()
+    items = reddyt.fetch(subreddit = 'analog', items = 10)
 
-    print('Total new posts {}'.format(c))
+    for collection in items:
+        db_collection = db[collection]
+        for item in items[collection]:
+            print("Processing item with updatadable {}".format(item.id))
+            db_collection.update(
+                    { 'id'  : item.id }, 
+                    { 
+                        '$set'          : item.updatable_fields,
+                        '$setOnInsert'  : item.all_fields
+                    }, 
+                    True)
 
 if __name__ == '__main__':
     main()
