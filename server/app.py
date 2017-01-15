@@ -4,9 +4,14 @@ from flask import make_response
 from pymongo import MongoClient
 from datetime import datetime
 import json
+import os
 
 app = Flask(__name__)
-db = MongoClient('mongodb://mongo:27017').reddyt_db
+host = os.getenv('MONGO_HOST', 'localhost')
+port = os.getenv('MONGO_PORT', '27017')
+
+mongo = MongoClient('mongodb://{}:{}/'.format(host, port))
+db = mongo.reddyt_db
 
 @app.route("/")
 def main():
@@ -14,6 +19,7 @@ def main():
 
 @app.route("/items")
 def search():
+    #TODO: validate parameters
     items = []
     items += db[request.args.get('subreddit')].find( {
         'created'   : { '$gte' : int(request.args.get('from')) },
@@ -23,7 +29,6 @@ def search():
     response = make_response(json.dumps(items), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

@@ -1,6 +1,7 @@
 import praw
 import json
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] (%(threadName)-10s) %(message)s',
@@ -25,12 +26,12 @@ class Comment(Item):
 class Reddyt:
 
     def __init__(self):
-        #TODO: init from env variables
-        self._reddyt = praw.Reddit(client_id='QrKWmDAiiMqmKg',
-                client_secret='AzEuxi3VcfUhvynyXRZuChqQMow',
-                username='_nothingistrue',
-                password='_everythingispermitted',
-                user_agent='testscript reddit API')
+        client_secret = os.getenv('CLIENT_SECRET', '')
+        client_id = os.getenv('CLIENT_ID', '')
+        user_agent = os.getenv('USER_AGENT', '')
+        self._reddyt = praw.Reddit(client_id=client_id,
+                client_secret=client_secret,
+                user_agent=user_agent)
 
     def fetch(self, subreddit, items):
         submissions = []
@@ -39,7 +40,7 @@ class Reddyt:
             item = {
                     'id'        : submission.id,
                     'title'     : submission.title,
-                    'created'   : submission.created
+                    'created'   : submission.created_utc
                     }
             logging.debug("Fetched %s", item['id'])
             submissions.append(Submission(item))
@@ -49,7 +50,7 @@ class Reddyt:
                 item = {
                         'id'        : comment.id,
                         'body'      : comment.body,
-                        'created'   : comment.created
+                        'created'   : comment.created_utc
                         }
                 logging.debug("Fetched %s", item['id'])
                 comments.append(Comment(item))

@@ -4,6 +4,7 @@ import time
 import threading
 import logging
 import json
+import os
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] (%(threadName)-10s) %(message)s',
@@ -28,8 +29,10 @@ def process(reddyt, db, subreddit, limit):
     logging.info("Finished processing %s", subreddit)
 
 def db_conn():
-    #TODO: expose env variables for URL
-    mongo = pymongo.MongoClient('mongodb://mongo:27017/')
+    host = os.getenv('MONGO_HOST', 'localhost')
+    port = os.getenv('MONGO_PORT', '27017')
+
+    mongo = pymongo.MongoClient('mongodb://{}:{}/'.format(host, port))
     db = mongo.reddyt_db
     return db
     
@@ -66,7 +69,6 @@ def main():
                     "Worker %s finished. Scheduling work in the next %d seconds", 
                     k, 
                     workers[k]['refresh_interval'])
-                #TODO: get schedule and limits from file
                 sched_worker = threading.Timer(
                     workers[k]['refresh_interval'], 
                     process, 
