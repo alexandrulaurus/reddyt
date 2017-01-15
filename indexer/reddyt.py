@@ -4,25 +4,18 @@ import json
 class Item:
     def __init__(self, fields):
         self.id = fields['id']
-        self.created = fields['created'];
-        self.all_fields = fields;
-        self._updatable_fields = {}
-
-    def updatable_fields(self):
-        return self._updatable_fields
-
-    def all_fields(self):
-        return self.all_fields
+        self.created = fields['created']
+        self.updatable_fields = {}
 
 class Submission(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self._updatable_fields = { 'title'.encode('UTF-8') : fields['title'].encode('UTF-8') }
+        self.updatable_fields = { 'title' : fields['title'] }
     
 class Comment(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self._updatable_fields = { 'body'.encode('UTF-8')  : fields['body'].encode('UTF-8') }
+        self.updatable_fields = { 'body' : fields['body'] }
     
 class Reddyt:
     def __init__(self):
@@ -56,4 +49,4 @@ class Reddyt:
                 comments.append(Comment(item))
             
         print("Fetched for {}: {} submissions, {} comments".format(subreddit, len(submissions), len(comments)))
-        return { 'submissions' : submissions, 'comments' : comments }
+        return submissions + comments

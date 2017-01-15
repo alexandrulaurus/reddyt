@@ -21,17 +21,18 @@ def main():
     reddyt = Reddyt()
     items = reddyt.fetch(subreddit = 'analog', items = 10)
 
-    for collection in items:
-        db_collection = db[collection]
-        for item in items[collection]:
-            print("Processing item with updatadable {}".format(item.id))
-            db_collection.update(
-                    { 'id'  : item.id }, 
-                    { 
-                        '$set'          : item.updatable_fields,
-                        '$setOnInsert'  : item.all_fields
-                    }, 
-                    True)
+    for item in items:
+        db_collection = db[item.__class__.__name__.lower()]
+        db_collection.update(
+                { 'id'  : item.id }, 
+                { 
+                    '$set'          : item.updatable_fields,
+                    '$setOnInsert'  : {
+                                        'id'        : item.id,
+                                        'created'   : item.created
+                                      }
+                }, 
+                True)
 
 if __name__ == '__main__':
     main()
