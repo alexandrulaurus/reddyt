@@ -1,5 +1,10 @@
 import praw
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s [%(levelname)s] (%(threadName)-10s) %(message)s',
+                    )
 
 class Item:
     def __init__(self, fields):
@@ -18,6 +23,7 @@ class Comment(Item):
         self.updatable_fields = { 'body' : fields['body'] }
     
 class Reddyt:
+
     def __init__(self):
         #TODO: init from env variables
         self._reddyt = praw.Reddit(client_id='QrKWmDAiiMqmKg',
@@ -35,7 +41,7 @@ class Reddyt:
                     'title'     : submission.title,
                     'created'   : submission.created
                     }
-            print(json.dumps(item))
+            logging.debug("Fetched %s", item['id'])
             submissions.append(Submission(item))
             
             submission.comments.replace_more(limit=0)
@@ -45,8 +51,8 @@ class Reddyt:
                         'body'      : comment.body,
                         'created'   : comment.created
                         }
-                print(json.dumps(item))
+                logging.debug("Fetched %s", item['id'])
                 comments.append(Comment(item))
             
-        print("Fetched for {}: {} submissions, {} comments".format(subreddit, len(submissions), len(comments)))
+        logging.info("Fetched for %s: %d submissions, %d comments", subreddit, len(submissions), len(comments))
         return submissions + comments
