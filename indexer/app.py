@@ -14,8 +14,7 @@ def process(reddyt, db, subreddit, limit):
     items = reddyt.fetch(subreddit, limit)
 
     for item in items:
-        collection = "{}s".format(item.__class__.__name__.lower())
-        db_collection = db[collection]
+        db_collection = db[subreddit]
         db_collection.update(
                 { 'id'  : item.id }, 
                 { 
@@ -32,10 +31,6 @@ def db_conn():
     #TODO: expose env variables for URL
     mongo = pymongo.MongoClient('mongodb://mongo:27017/')
     db = mongo.reddyt_db
-    db.comments.create_index([("id", pymongo.ASCENDING),
-                            ("created", pymongo.DESCENDING)])
-    db.submissions.create_index([("id", pymongo.ASCENDING),
-                                ("created", pymongo.DESCENDING)])
     return db
     
 def main():
@@ -49,6 +44,8 @@ def main():
     logging.info("Start processing subreddits for initial dump")
     workers = {}
     for config in subreddits['subreddits']:
+        db[config['name']].create_index([("id", pymongo.ASCENDING),
+                                        ("created", pymongo.DESCENDING)])
         name = "Subreddit-{}".format(config['name'])
         worker = threading.Thread(
                 name=name, 
