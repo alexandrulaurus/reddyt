@@ -1,5 +1,5 @@
-from pymongo import MongoClient
 from reddyt import Reddyt
+import pymongo
 import time
 import threading
 import logging
@@ -14,7 +14,8 @@ def process(reddyt, db, subreddit, limit):
     items = reddyt.fetch(subreddit, limit)
 
     for item in items:
-        db_collection = db[item.__class__.__name__.lower()]
+        collection = "{}s".format(item.__class__.__name__.lower())
+        db_collection = db[collection]
         db_collection.update(
                 { 'id'  : item.id }, 
                 { 
@@ -25,13 +26,20 @@ def process(reddyt, db, subreddit, limit):
                                       }
                 }, 
                 True)
-        
     logging.info("Finished processing %s", subreddit)
+
+def db_conn():
+    #TODO: expose env variables for URL
+    mongo = pymongo.MongoClient('mongodb://mongo:27017/')
+    db = mongo.reddyt_db
+    db.comments.create_index([("id", pymongo.ASCENDING),
+                            ("created", pymongo.DESCENDING)])
+    db.submissions.create_index([("id", pymongo.ASCENDING),
+                                ("created", pymongo.DESCENDING)])
+    return db
     
 def main():
-    #TODO: expose env variables for URL
-    mongo = MongoClient('mongodb://mongo:27017/')
-    db = mongo.reddyt_db
+    db = db_conn()
 
     with open('./config.json') as config_file:
         subreddits = json.load(config_file)
