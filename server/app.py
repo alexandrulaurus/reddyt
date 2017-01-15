@@ -19,14 +19,23 @@ def main():
 
 @app.route("/items")
 def search():
-    #TODO: validate parameters
-    items = []
-    items += db[request.args.get('subreddit')].find( {
-        'created'   : { '$gte' : int(request.args.get('from')) },
-        'created'   : { '$lt' : int(request.args.get('to')) }
-    }, { '_id': 0 })
-    app.logger.debug("Found %d items", len(items))
-    response = make_response(json.dumps(items), 200)
+    try:
+        items = []
+        #TODO: maybe validate subrreddit name although an inexistent
+        #TODO: collection will return 0 results
+        items += db[request.args.get('subreddit')].find( {
+            'created'   : { '$gte' : int(request.args.get('from')) },
+            'created'   : { '$lt' : int(request.args.get('to')) }
+        }, { '_id': 0 })
+        app.logger.debug("Found %d items", len(items))
+        response = make_response(json.dumps(items), 200)
+    except ValueError:
+        app.logger.error("Invalid parameters")
+        response = make_response(json.dumps({'error':'invalid request params'}), 400)
+    except TypeError:
+        app.logger.error("Missing parameters")
+        response = make_response(json.dumps({'error':'missing request params'}), 400)
+
     response.headers['Content-Type'] = 'application/json'
     return response
 
