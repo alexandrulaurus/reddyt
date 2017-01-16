@@ -3,7 +3,7 @@ A reddit search engine written in Python
 
 ## Modules
 ### indexer
-Starts a reddit client, fetches itmes from subreddits and persists items into mongodb
+Starts a reddit client, fetches items from subreddits and persists items into mongodb
 
 #### Configuration
 One can define a list of subreddits along with several additional settings to
