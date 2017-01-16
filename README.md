@@ -49,14 +49,10 @@ This definition should be set in the `config.json` file which gets picked up whe
 ### server
 Exposes the following endpoints at `localhost:5000`
 
-#### `/`
-Displays a welcome message
-* method: `GET`
-* params: none
-
 #### `/items?subreddit=<subreddit>&from=<from>&to=<to>[&keyword=<keyword>]`
 Returns a list of items formatted as JSON based on the given parameters
 * method: `GET`
+* content-type: `application/json`
 * params:
   - query:
     - `subreddit`: 
@@ -64,14 +60,45 @@ Returns a list of items formatted as JSON based on the given parameters
       - name of the subreddit to search content
     - `from`:
       - mandatory
-      - POSIX timestamp for the lower limit of the content `created_utc` time from Reddit API
+      - POSIX timestamp for the lower limit of the content based on `created_utc` time from Reddit API
     - `to`:
       - mandatory
       - POSIX timestamp for the upper limit of the content based on `created_utc` time from Reddit API
     - `keyword`:
       - optional
       - word to search in item content
-* content-type: `application/json`
+* output example:
+```
+mybook:~ alexandru$ curl -i "http://localhost:5000/items?subreddit=jailbreak&from=1483309088&to=1484526822&keyword=new"
+HTTP/1.0 200 OK
+Content-Type: application/json
+Content-Length: 890
+Server: Werkzeug/0.11.15 Python/2.7.13
+Date: Mon, 16 Jan 2017 01:10:48 GMT
+
+[
+    {
+        "body": "its not recommended on the latest because cokepokes doesn't know what the new security features it has in it. But I am on 9.45.3. the latest is 9.45.10, but he recommends not updating to that one. 9.45.3 works perfectly fine for me",
+        "created": 1484526695,
+        "id": "dch6z4n"
+    },
+    {
+        "body": "1 word \"stay\", but maybe its hard not to upgrade because latest ios got some new features.\nBut it wont be as stable as ios 8 jailbreak.\n\nHmm. I know you confused bout this",
+        "created": 1484526595,
+        "id": "dch6w2y"
+    },
+    {
+        "body": "Well that's taking it to a new level ",
+        "created": 1484526103,
+        "id": "dch6gl7"
+    },
+    {
+        "created": 1484524404,
+        "id": "5o7d46",
+        "title": "[Request] Simple tweak to make Safari 'Request Desktop Site' to open in a new tab"
+    }
+]
+```
 
 ## How to run
 
