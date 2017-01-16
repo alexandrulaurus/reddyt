@@ -45,9 +45,47 @@ process that subreddit:
 
 This definition should be set in the `config.json` file which gets picked up when the application starts.
 
-`TODO: add indexes for mongodb`
 
 ### server
-Starts a flask server and displays a welcome message
+Exposes the following endpoints at `localhost:5000`
 
-`TODO: expose search endpoint`
+#### `/`
+Displays a welcome message
+* method: `GET`
+* params: none
+
+#### `/items?subreddit=<subreddit>&from=<from>&to=<to>[&keyword=<keyword>]`
+Returns a list of items formatted as JSON based on the given parameters
+* method: `GET`
+* params:
+  - query:
+    - `subreddit`: 
+      - mandatory
+      - name of the subreddit to search content
+    - `from`:
+      - mandatory
+      - POSIX timestamp for the lower limit of the content `created_utc` time from Reddit API
+    - `to`:
+      - mandatory
+      - POSIX timestamp for the upper limit of the content based on `created_utc` time from Reddit API
+    - `keyword`:
+      - optional
+      - word to search in item content
+* content-type: `application/json`
+
+## How to run
+
+### Prerequisites:
+
+* docker >= 1.12.6
+* docker-compose >= 1.9.0
+
+Make sure you are in the root directory and run the following command
+
+```
+docker-compose -f reddyt-compose.yml up
+```
+
+## TODO
+
+`TODO: unit tests`
