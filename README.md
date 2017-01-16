@@ -6,6 +6,16 @@ A reddit search engine written in Python
 Starts a reddit client, fetches items from subreddits and persists items into mongodb
 
 #### Configuration
+
+##### Reddit API
+In order to connect to Reddit's API the following environment variables need to be provided for this module:
+* `CLIENT_ID`
+* `CLIENT_SECRET`
+* `USER_AGENT`
+
+These variables can be filled in the [reddyt-compose.yml](https://github.com/alexandrulaurus/reddyt/blob/master/reddyt-compose.yml#L25) under the `indexer` container definition
+
+##### Subreddit configuration
 One can define a list of subreddits along with several additional settings to
 process that subreddit:
 
@@ -43,7 +53,7 @@ process that subreddit:
 * `refresh_interval` :
   - specifies the time interval at which the underlying subreddit is going to be processed again
 
-This definition should be set in the `config.json` file which gets picked up when the application starts.
+This definition should be set in the [config.json](./indexer/config.json) file which gets picked up when the application starts.
 
 
 ### server
@@ -107,7 +117,7 @@ Date: Mon, 16 Jan 2017 01:10:48 GMT
 * docker >= 1.12.6
 * docker-compose >= 1.9.0
 
-Make sure you are in the root directory and run the following command
+Run the following command from the root directory:
 
 ```
 docker-compose -f reddyt-compose.yml up
