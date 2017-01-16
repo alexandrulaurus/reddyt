@@ -9,19 +9,47 @@ logging.basicConfig(level=logging.INFO,
 
 class Item:
     def __init__(self, fields):
-        self.id = fields['id']
-        self.created = fields['created']
-        self.updatable_fields = {}
+        self.__id = fields['id']
+        self.__created = fields['created']
+        self.__update_fields = {}
+        self.__text_type = ''
+        self.__text_content = ''
+    def get_id(self):
+        return self.__id
+    def get_created(self):
+        return self.__created
+    def get_type(self):
+        return self.__text_type
+    def get_content(self):
+        return self.__text_content
+    def get_update_fields(self):
+        return self.__update_fields
 
 class Submission(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self.updatable_fields = { 'title' : fields['title'] }
+        self.__text_content = fields['title']
+        self.__text_type = 'title'
+        self.__update_fields = { 'content' : fields['title'] }
+    def get_type(self):
+        return self.__text_type
+    def get_content(self):
+        return self.__text_content
+    def get_update_fields(self):
+        return self.__update_fields
     
 class Comment(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self.updatable_fields = { 'body' : fields['body'] }
+        self.__text_content = fields['body']
+        self.__text_type = 'body'
+        self.__update_fields = { 'content' : fields['body'] }
+    def get_type(self):
+        return self.__text_type
+    def get_content(self):
+        return self.__text_content
+    def get_update_fields(self):
+        return self.__update_fields
     
 class Reddyt:
 
