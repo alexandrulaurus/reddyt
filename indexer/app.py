@@ -17,12 +17,13 @@ def process(reddyt, db, subreddit, limit):
     for item in items:
         db_collection = db[subreddit]
         db_collection.update(
-                { 'id'  : item.id }, 
+                { 'id'  : item.get_id() }, 
                 { 
-                    '$set'          : item.updatable_fields,
+                    '$set'          : item.get_update_fields(),
                     '$setOnInsert'  : {
-                                        'id'        : item.id,
-                                        'created'   : item.created
+                                        'id'        : item.get_id(),
+                                        'type'      : item.get_type(),
+                                        'created'   : item.get_created()
                                       }
                 }, 
                 True)
@@ -47,8 +48,10 @@ def main():
     logging.info("Start processing subreddits for initial dump")
     workers = {}
     for config in subreddits['subreddits']:
-        db[config['name']].create_index([("id", pymongo.ASCENDING),
+        db[config['name']].create_index([("id", pymongo.DESCENDING),
                                         ("created", pymongo.DESCENDING)])
+        db[config['name']].create_index([("content", pymongo.TEXT)])
+
         name = "Subreddit-{}".format(config['name'])
         worker = threading.Thread(
                 name=name, 

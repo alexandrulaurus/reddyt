@@ -2,19 +2,19 @@
     "subreddits" : [
         {
             "name"              : "analog",
-            "initial_dump"      : 5,
+            "initial_dump"      : 25,
             "refresh_limit"     : 5,
             "refresh_interval"  : 240
         },
         {
             "name"              : "redditdev",
-            "initial_dump"      : 5,
+            "initial_dump"      : 25,
             "refresh_limit"     : 5,
             "refresh_interval"  : 240
         },
         {
             "name"              : "jailbreak",
-            "initial_dump"      : 5,
+            "initial_dump"      : 25,
             "refresh_limit"     : 5,
             "refresh_interval"  : 240
         }
