@@ -48,9 +48,10 @@ def main():
     logging.info("Start processing subreddits for initial dump")
     workers = {}
     for config in subreddits['subreddits']:
-        db[config['name']].create_index([("id", pymongo.DESCENDING),
+        db[config['name']].create_index([("id", pymongo.DESCENDING)], unique=True)
+        db[config['name']].create_index([("content", pymongo.TEXT),
                                         ("created", pymongo.DESCENDING)])
-        db[config['name']].create_index([("content", pymongo.TEXT)])
+        db[config['name']].create_index([("created", pymongo.DESCENDING)])
 
         name = "Subreddit-{}".format(config['name'])
         worker = threading.Thread(
@@ -61,7 +62,7 @@ def main():
         workers[config['name']]['worker'] = worker
         workers[config['name']]['initial_dump'] = config['initial_dump']
         workers[config['name']]['refresh_limit'] = config['refresh_limit']
-        workers[config['name']]['refresh_interval'] =config['refresh_interval']
+        workers[config['name']]['refresh_interval'] = config['refresh_interval']
         worker.start()
  
     logging.info("Waiting for initial dump to complete and scheduling each subreddit")
