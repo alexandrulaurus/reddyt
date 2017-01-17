@@ -3,9 +3,19 @@ A reddit search engine written in Python
 
 ## Modules
 ### indexer
-Starts a reddit client, fetches itmes from subreddits and persists items into mongodb
+Starts a reddit client, fetches items from subreddits and persists items into mongodb
 
 #### Configuration
+
+##### Reddit API
+In order to connect to Reddit's API the following environment variables need to be provided for this module:
+* `CLIENT_ID`
+* `CLIENT_SECRET`
+* `USER_AGENT`
+
+These variables can be filled in the [reddyt-compose.yml](https://github.com/alexandrulaurus/reddyt/blob/master/reddyt-compose.yml#L25) under the `indexer` container definition
+
+##### Subreddit configuration
 One can define a list of subreddits along with several additional settings to
 process that subreddit:
 
@@ -43,11 +53,76 @@ process that subreddit:
 * `refresh_interval` :
   - specifies the time interval at which the underlying subreddit is going to be processed again
 
-This definition should be set in the `config.json` file which gets picked up when the application starts.
+This definition should be set in the [config.json](./indexer/config.json) file which gets picked up when the application starts.
 
-`TODO: add indexes for mongodb`
 
 ### server
-Starts a flask server and displays a welcome message
+Exposes the following endpoints at `localhost:5000`
 
-`TODO: expose search endpoint`
+#### `/items?subreddit=<subreddit>&from=<from>&to=<to>[&keyword=<keyword>]`
+Returns a list of items formatted as JSON based on the given parameters
+* method: `GET`
+* content-type: `application/json`
+* params:
+  - query:
+    - `subreddit`: 
+      - mandatory
+      - name of the subreddit to search content
+    - `from`:
+      - mandatory
+      - POSIX timestamp for the lower limit of the content based on `created_utc` time from Reddit API
+    - `to`:
+      - mandatory
+      - POSIX timestamp for the upper limit of the content based on `created_utc` time from Reddit API
+    - `keyword`:
+      - optional
+      - word to search in item content
+* output example:
+```
+mybook:~ alexandru$ curl -i "http://localhost:5000/items?subreddit=jailbreak&from=1483309088&to=1484526822&keyword=new"
+HTTP/1.0 200 OK
+Content-Type: application/json
+Content-Length: 890
+Server: Werkzeug/0.11.15 Python/2.7.13
+Date: Mon, 16 Jan 2017 01:10:48 GMT
+
+[
+    {
+        "body": "its not recommended on the latest because cokepokes doesn't know what the new security features it has in it. But I am on 9.45.3. the latest is 9.45.10, but he recommends not updating to that one. 9.45.3 works perfectly fine for me",
+        "created": 1484526695,
+        "id": "dch6z4n"
+    },
+    {
+        "body": "1 word \"stay\", but maybe its hard not to upgrade because latest ios got some new features.\nBut it wont be as stable as ios 8 jailbreak.\n\nHmm. I know you confused bout this",
+        "created": 1484526595,
+        "id": "dch6w2y"
+    },
+    {
+        "body": "Well that's taking it to a new level ",
+        "created": 1484526103,
+        "id": "dch6gl7"
+    },
+    {
+        "created": 1484524404,
+        "id": "5o7d46",
+        "title": "[Request] Simple tweak to make Safari 'Request Desktop Site' to open in a new tab"
+    }
+]
+```
+
+## How to run
+
+### Prerequisites:
+
+* docker >= 1.12.6
+* docker-compose >= 1.9.0
+
+Run the following command from the root directory:
+
+```
+docker-compose -f reddyt-compose.yml up
+```
+
+## TODO
+
+`TODO: unit tests`
