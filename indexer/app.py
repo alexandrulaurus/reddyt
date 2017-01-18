@@ -36,6 +36,12 @@ def db_conn():
     mongo = pymongo.MongoClient('mongodb://{}:{}/'.format(host, port))
     db = mongo.reddyt_db
     return db
+
+def reddyt_client():
+    client_secret = os.getenv('CLIENT_SECRET', '')
+    client_id = os.getenv('CLIENT_ID', '')
+    user_agent = os.getenv('USER_AGENT', '')
+    return Reddyt.withClientConfig(client_id, client_secret, user_agen)
     
 def main():
     db = db_conn()
@@ -43,7 +49,7 @@ def main():
     with open('./config.json') as config_file:
         subreddits = json.load(config_file)
 
-    reddyt = Reddyt()
+    reddyt = reddyt_client()
 
     logging.info("Start processing subreddits for initial dump")
     workers = {}

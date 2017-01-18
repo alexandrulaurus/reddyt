@@ -52,19 +52,19 @@ class Comment(Item):
         return self.__update_fields
     
 class Reddyt:
+    def __init__(self, client):
+        self.__reddyt = client
 
-    def __init__(self):
-        client_secret = os.getenv('CLIENT_SECRET', '')
-        client_id = os.getenv('CLIENT_ID', '')
-        user_agent = os.getenv('USER_AGENT', '')
-        self._reddyt = praw.Reddit(client_id=client_id,
+    @classmethod
+    def withClientConfig(self, client_id, client_secret, user_agent):
+        self.__reddyt = praw.Reddit(client_id=client_id,
                 client_secret=client_secret,
                 user_agent=user_agent)
 
     def fetch(self, subreddit, items):
         submissions = []
         comments = []
-        for submission in self._reddyt.subreddit(subreddit).new(limit=items):
+        for submission in self.__reddyt.subreddit(subreddit).new(limit=items):
             item = {
                     'id'        : submission.id,
                     'title'     : submission.title,
