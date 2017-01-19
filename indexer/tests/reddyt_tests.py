@@ -52,9 +52,4 @@ class ReddytTest(unittest.TestCase):
         list_new_call.assert_called_with(limit=2)
         replace_comments_call.assert_called_with(limit=0)
         list_comments_call.assert_called_with()
-        for r in results:
-            print(r)
-        for e in self.expected_items:
-            print(e)
-        #TODO: assert fails with the Comment instance in the list
         self.assertItemsEqual(results, self.expected_items)

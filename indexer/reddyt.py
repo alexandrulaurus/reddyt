@@ -28,6 +28,11 @@ class Item:
         return '<id={0}, created={1}, type={2}, update_fields={3}, content={4}>'.format(
                 self._id, self._created, self._text_type,
                 self._update_fields, self._text_content)
+    def __hash__(self):
+        return hash(tuple(sorted(self.__dict__.items())))
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.__dict__ == other.__dict__
 
 class Submission(Item):
     def __init__(self, fields):
