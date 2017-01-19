@@ -9,48 +9,40 @@ logging.basicConfig(level=logging.INFO,
 
 class Item:
     def __init__(self, fields):
-        self.__id = fields['id']
-        self.__created = fields['created']
-        self.__update_fields = {}
-        self.__text_type = ''
-        self.__text_content = ''
+        self._id = fields['id']
+        self._created = fields['created']
+        self._update_fields = {}
+        self._text_type = ''
+        self._text_content = ''
     def get_id(self):
-        return self.__id
+        return self._id
     def get_created(self):
-        return self.__created
+        return self._created
     def get_type(self):
-        return self.__text_type
+        return self._text_type
     def get_content(self):
-        return self.__text_content
+        return self._text_content
     def get_update_fields(self):
-        return self.__update_fields
+        return self._update_fields
+    def __str__(self):
+        return '<id={0}, created={1}, type={2}, update_fields={3}, content={4}>'.format(
+                self._id, self._created, self._text_type,
+                self._update_fields, self._text_content)
 
 class Submission(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self.__text_content = fields['title']
-        self.__text_type = 'title'
-        self.__update_fields = { 'content' : fields['title'] }
-    def get_type(self):
-        return self.__text_type
-    def get_content(self):
-        return self.__text_content
-    def get_update_fields(self):
-        return self.__update_fields
+        self._text_content = fields['title']
+        self._text_type = 'title'
+        self._update_fields = { 'content' : fields['title'] }
     
 class Comment(Item):
     def __init__(self, fields):
         Item.__init__(self, fields)
-        self.__text_content = fields['body']
-        self.__text_type = 'body'
-        self.__update_fields = { 'content' : fields['body'] }
-    def get_type(self):
-        return self.__text_type
-    def get_content(self):
-        return self.__text_content
-    def get_update_fields(self):
-        return self.__update_fields
-    
+        self._text_content = fields['body']
+        self._text_type = 'body'
+        self._update_fields = { 'content' : fields['body'] }
+
 class Reddyt:
     def __init__(self, client):
         self.__reddyt = client
@@ -70,8 +62,9 @@ class Reddyt:
                     'title'     : submission.title,
                     'created'   : submission.created_utc
                     }
-            logging.debug("Fetched %s", item['id'])
-            submissions.append(Submission(item))
+            s = Submission(item)
+            logging.debug("Fetched %s", s)
+            submissions.append(s)
             
             submission.comments.replace_more(limit=0)
             for comment in submission.comments.list():
@@ -80,8 +73,9 @@ class Reddyt:
                         'body'      : comment.body,
                         'created'   : comment.created_utc
                         }
-                logging.debug("Fetched %s", item['id'])
-                comments.append(Comment(item))
+                c = Comment(item)
+                logging.debug("Fetched %s", c)
+                comments.append(c)
             
         logging.info("Fetched for %s: %d submissions, %d comments", subreddit, len(submissions), len(comments))
         return submissions + comments
