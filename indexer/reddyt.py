@@ -53,10 +53,10 @@ class Reddyt:
         self.__reddyt = client
 
     @classmethod
-    def withClientConfig(self, client_id, client_secret, user_agent):
-        self.__reddyt = praw.Reddit(client_id=client_id,
-                client_secret=client_secret,
-                user_agent=user_agent)
+    def withClientConfig(cls, client_id, client_secret, user_agent):
+        return cls(praw.Reddit(client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent))
 
     def fetch(self, subreddit, items):
         submissions = []

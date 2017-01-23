@@ -1,11 +1,10 @@
-from flask import Flask
-from flask import request
-from flask import make_response
+from flask import Flask, request, make_response
 from bson.json_util import dumps
 import pymongo
 import os
 
 app = Flask(__name__)
+
 host = os.getenv('MONGO_HOST', 'localhost')
 port = os.getenv('MONGO_PORT', '27017')
 
@@ -40,7 +39,6 @@ def search():
             search_options, 
             { '_id': 0 }
         ).sort([('created', pymongo.DESCENDING)])
-        
         """
         'created' gets printed with .0 from json.dumps(). It's also in the same
         way in the request. However, it's stored correctly as an int in mongo

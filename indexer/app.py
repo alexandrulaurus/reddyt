@@ -41,7 +41,7 @@ def reddyt_client():
     client_secret = os.getenv('CLIENT_SECRET', '')
     client_id = os.getenv('CLIENT_ID', '')
     user_agent = os.getenv('USER_AGENT', '')
-    return Reddyt.withClientConfig(client_id, client_secret, user_agen)
+    return Reddyt.withClientConfig(client_id, client_secret, user_agent)
     
 def main():
     db = db_conn()
