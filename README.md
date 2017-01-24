@@ -123,6 +123,15 @@ Run the following command from the root directory:
 docker-compose -f reddyt-compose.yml up
 ```
 
-## TODO
+## Tests
 
-`TODO: unit tests`
+### Prerequisites
+
+* nose >= 1.3.7
+* mock >= 2.0.0
+
+```
+# Make sure you are in a directory where there is a child directory named tests and run nose
+cd sub/module
+nosetests
+```
